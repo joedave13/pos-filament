@@ -23,7 +23,6 @@ return new class extends Migration
             $table->unsignedBigInteger('paid_amount')->default(0);
             $table->unsignedBigInteger('change_amount')->default(0);
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 
