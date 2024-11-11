@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\OrderGender;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -24,7 +25,7 @@ class Order extends Model
     protected function casts(): array
     {
         return [
-            'gender' => 'string',
+            'gender' => OrderGender::class,
             'total_price' => 'integer',
             'payment_method_id' => 'integer',
             'paid_amount' => 'integer',
