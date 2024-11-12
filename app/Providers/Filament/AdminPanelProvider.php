@@ -55,7 +55,8 @@ class AdminPanelProvider extends PanelProvider
                 Authenticate::class,
             ])
             ->navigationGroups([
-                'Master Data'
+                'Master Data',
+                'Transaction'
             ]);
     }
 }
