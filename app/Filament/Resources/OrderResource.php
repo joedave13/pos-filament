@@ -79,8 +79,11 @@ class OrderResource extends Resource
                                     ->live(onBlur: true)
                                     ->afterStateHydrated(function ($state, Set $set, Get $get) {
                                         $product = Product::query()->find($state);
-                                        $set('stock', $product->stock);
-                                        $set('price', $product->price);
+
+                                        if ($product) {
+                                            $set('stock', $product->stock);
+                                            $set('price', $product->price);
+                                        }
                                     })
                                     ->afterStateUpdated(function ($state, Set $set, Get $get) {
                                         $product = Product::query()->find($state);
@@ -211,6 +214,7 @@ class OrderResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->defaultSort('created_at', 'desc')
             ->columns([
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
