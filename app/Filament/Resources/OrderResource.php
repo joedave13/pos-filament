@@ -28,6 +28,11 @@ class OrderResource extends Resource
 
     protected static ?string $navigationGroup = 'Transaction';
 
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->with(['orderDetails.product']);
+    }
+
     public static function form(Form $form): Form
     {
         return $form
