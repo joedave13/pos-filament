@@ -2,7 +2,7 @@
     <div class="grid grid-cols-1 dark:bg-gray-900 md:grid-cols-3 gap-4">
         <div class="md:col-span-2 bg-white dark:bg-gray-800 shadow-md rounded-lg p-6">
             <div class="mb-4">
-                <input type="text" placeholder="Search product..."
+                <input type="text" wire:model.live.debounce.300ms="search" placeholder="Search product..."
                     class="w-full p-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
             </div>
             <div class="flex-grow">
