@@ -2,12 +2,15 @@
 
 namespace App\Livewire;
 
+use App\Models\Product;
 use Livewire\Component;
 
 class Cashier extends Component
 {
     public function render()
     {
-        return view('livewire.cashier');
+        $products = Product::query()->where('stock', '!=', 0)->where('is_active', true)->orderBy('name')->paginate(9);
+
+        return view('livewire.cashier', compact('products'));
     }
 }

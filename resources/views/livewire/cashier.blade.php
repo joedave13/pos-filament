@@ -7,13 +7,21 @@
             </div>
             <div class="flex-grow">
                 <div class="grid grid-cols-8 sm:grid-cols-3 md:grid-cols-8 lg:grid-cols- gap-4">
-                    <div class="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg shadow cursor-pointer">
-                        <img src="https://images.unsplash.com/photo-1464226184884-fa280b87c399?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                            alt="Product Image" class="w-full h-32 object-cover rounded-lg mb-2">
-                        <h3 class="font-semibold mb-2">Name</h3>
-                        <p class="text-gray-600 dark:text-gray-400 text-xs text-right">Rp. 10.000</p>
-                        <p class="text-gray-600 dark:text-gray-400 text-xs text-right">Stock: 3</p>
-                    </div>
+                    @foreach ($products as $product)
+                        <div class="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg shadow cursor-pointer">
+                            <img src="{{ Storage::url($product->image) }}" alt="Product Image"
+                                class="w-full h-32 object-cover rounded-lg mb-2">
+                            <h3 class="font-semibold mb-2 truncate">{{ $product->name }}</h3>
+                            <p class="text-gray-950 dark:text-gray-400 text-xs text-right">Rp.
+                                {{ number_format($product->price, 0, ',', '.') }}</p>
+                            <p class="text-gray-600 dark:text-gray-400 text-xs text-right">Stock: {{ $product->stock }}
+                            </p>
+                        </div>
+                    @endforeach
+                </div>
+
+                <div class="py-4">
+                    {{ $products->links() }}
                 </div>
             </div>
         </div>
