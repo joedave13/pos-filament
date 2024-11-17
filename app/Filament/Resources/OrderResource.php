@@ -14,6 +14,7 @@ use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
+use Filament\Support\Enums\Alignment;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -76,6 +77,11 @@ class OrderResource extends Resource
                                     ->preload()
                                     ->columnSpan(['md' => 4])
                                     ->live(onBlur: true)
+                                    ->afterStateHydrated(function ($state, Set $set, Get $get) {
+                                        $product = Product::query()->find($state);
+                                        $set('stock', $product->stock);
+                                        $set('price', $product->price);
+                                    })
                                     ->afterStateUpdated(function ($state, Set $set, Get $get) {
                                         $product = Product::query()->find($state);
                                         $set('stock', $product->stock);
@@ -99,6 +105,12 @@ class OrderResource extends Resource
                                     ->minValue(0)
                                     ->columnSpan(['md' => 1])
                                     ->live()
+                                    ->afterStateHydrated(function ($state, Set $set, Get $get) {
+                                        $productPrice = $get('price') ?? 0;
+                                        $productSubtotal = $state * $productPrice;
+
+                                        $set('subtotal', $productSubtotal);
+                                    })
                                     ->afterStateUpdated(function ($state, Set $set, Get $get) {
                                         if ($state > $get('stock')) {
                                             $set('quantity', $get('stock'));
@@ -152,7 +164,7 @@ class OrderResource extends Resource
 
                                 if (!$paymentMethod->is_cash) {
                                     $set('paid_amount', $get('total_price'));
-                                    $set('change_amount', $get('total_price'));
+                                    $set('change_amount', 0);
                                 } else {
                                     $set('paid_amount', 0);
                                     $set('change_amount', 0);
@@ -200,30 +212,36 @@ class OrderResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('email')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('gender')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('phone')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('total_price')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('paymentMethod.name')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('paid_amount')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('change_amount')
-                    ->numeric()
-                    ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->label('Order Date'),
+                Tables\Columns\TextColumn::make('name')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('order_details_count')
+                    ->counts('orderDetails')
+                    ->label('Total Products'),
+                Tables\Columns\TextColumn::make('total_price')
+                    ->numeric(thousandsSeparator: '.')
+                    ->prefix('Rp. ')
+                    ->sortable()
+                    ->alignment(Alignment::End),
+                Tables\Columns\TextColumn::make('paid_amount')
+                    ->numeric(thousandsSeparator: '.')
+                    ->prefix('Rp. ')
+                    ->description(fn(Order $record) => $record->change_amount == 0 ? number_format($record->change_amount, 0, ',', '.') : '-' . number_format($record->change_amount, 0, ',', '.'))
+                    ->sortable()
+                    ->alignment(Alignment::End),
+                Tables\Columns\TextColumn::make('paymentMethod.name')
+                    ->badge()
+                    ->color(function (string $state): string {
+                        $paymentMethod = PaymentMethod::query()->where('name', $state)->first();
+
+                        return match ($paymentMethod->is_cash) {
+                            true => 'primary',
+                            false => 'warning',
+                        };
+                    }),
                 Tables\Columns\TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
@@ -233,8 +251,9 @@ class OrderResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make()->color('primary'),
+                Tables\Actions\EditAction::make()->color('warning'),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
