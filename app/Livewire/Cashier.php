@@ -11,6 +11,9 @@ use Livewire\Component;
 use Filament\Forms;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
+use Filament\Notifications\Notification;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Storage;
 
 class Cashier extends Component implements HasForms
 {
@@ -18,6 +21,8 @@ class Cashier extends Component implements HasForms
 
     public $search = '';
     public $customerName = '';
+    public $cartItems = [];
+    public $totalPrice = 0;
 
     public function mount(): void
     {
@@ -66,5 +71,49 @@ class Cashier extends Component implements HasForms
                         ->preload()
                 ])
         ]);
+    }
+
+    public function addToCart(int $productId)
+    {
+        $product = Product::query()->findOrFail($productId);
+
+        if ($product->stock <= 0) {
+            Notification::make()
+                ->title('Insufficient Product Stock')
+                ->body("Product's stock is not enough.")
+                ->warning()
+                ->send();
+
+            return;
+        }
+
+        $existingCartItemKey = null;
+
+        foreach ($this->cartItems as $key => $value) {
+            if ($value['product_id'] == $productId) {
+                $existingCartItemKey = $key;
+                break;
+            }
+        }
+
+        if ($existingCartItemKey !== null) {
+            $this->cartItems[$existingCartItemKey]['product_quantity']++;
+        } else {
+            $this->cartItems[] = [
+                'product_id' => $product->id,
+                'product_name' => $product->name,
+                'product_price' => $product->price,
+                'product_image' => Storage::url($product->image),
+                'product_quantity' => 1
+            ];
+        }
+
+        Session::put('cartItems', $this->cartItems);
+
+        Notification::make()
+            ->title('Success')
+            ->body("Product's added successfully.")
+            ->success()
+            ->send();
     }
 }

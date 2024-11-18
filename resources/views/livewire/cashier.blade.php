@@ -8,7 +8,8 @@
             <div class="flex-grow">
                 <div class="grid grid-cols-8 sm:grid-cols-3 md:grid-cols-8 lg:grid-cols- gap-4">
                     @foreach ($products as $product)
-                        <div class="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg shadow cursor-pointer">
+                        <div wire:click="addToCart({{ $product->id }})"
+                            class="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg shadow cursor-pointer">
                             <img src="{{ Storage::url($product->image) }}" alt="Product Image"
                                 class="w-full h-32 object-cover rounded-lg mb-2">
                             <h3 class="font-semibold mb-2 truncate">{{ $product->name }}</h3>
@@ -31,21 +32,24 @@
                 <h3 class="text-lg font-semibold text-center">Total: Rp 25.0000</h3>
             </div>
             <div class="mb-4">
-                <div class="flex justify-between items-center bg-gray-100 dark:bg-gray-700 p-4 rounded-lg shadow">
-                    <div class="flex items-center">
-                        <img src="https://images.unsplash.com/photo-1464226184884-fa280b87c399?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                            alt="Product Image" class="w-10 h-10 object-cover rounded-lg mr-2">
-                        <div class="px-2">
-                            <h3 class="text-sm font-semibold truncate">Name</h3>
-                            <p class="text-gray-600 dark:text-gray-400 text-xs">Rp 10.000</p>
+                @foreach ($cartItems as $cartItem)
+                    <div class="flex justify-between items-center bg-gray-100 dark:bg-gray-700 p-4 rounded-lg shadow">
+                        <div class="flex items-center">
+                            <img src="{{ $cartItem['product_image'] }}" alt="Product Image"
+                                class="w-10 h-10 object-cover rounded-lg mr-2">
+                            <div class="px-2">
+                                <h3 class="text-sm font-semibold truncate">{{ $cartItem['product_name'] }}</h3>
+                                <p class="text-gray-600 dark:text-gray-400 text-xs">Rp
+                                    {{ number_format($cartItem['product_price'], 0, ',', '.') }}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center">
+                            <x-filament::button color="warning">-</x-filament::button>
+                            <span class="px-4">{{ $cartItem['product_quantity'] }}</span>
+                            <x-filament::button color="success">+</x-filament::button>
                         </div>
                     </div>
-                    <div class="flex items-center">
-                        <x-filament::button color="warning">-</x-filament::button>
-                        <span class="px-4">1</span>
-                        <x-filament::button color="success">+</x-filament::button>
-                    </div>
-                </div>
+                @endforeach
             </div>
 
             <form>
