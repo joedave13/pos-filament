@@ -48,6 +48,14 @@
                 </div>
             </div>
 
+            <form>
+                {{ $this->form }}
+
+                <x-filament::button type="submit" class="w-full" icon="heroicon-m-shopping-cart">
+                    Checkout
+                </x-filament::button>
+            </form>
+
             <div class="mt-2">
 
             </div>
