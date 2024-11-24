@@ -180,7 +180,5 @@ class Cashier extends Component implements HasForms
         }
 
         $this->totalPrice = $initTotal;
-
-        return $initTotal;
     }
 }
