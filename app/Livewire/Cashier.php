@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Enums\OrderGender;
+use App\Models\Order;
 use App\Models\PaymentMethod;
 use App\Models\Product;
 use Filament\Forms\Form;
@@ -14,15 +15,18 @@ use Filament\Forms\Contracts\HasForms;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 
 class Cashier extends Component implements HasForms
 {
     use InteractsWithForms;
 
     public $search = '';
-    public $customerName = '';
+    public $customer_name = null;
+    public $customer_gender = null;
+    public $payment_method_id = null;
     public $cartItems = [];
-    public $totalPrice = 0;
+    public $totalPrice;
 
     public function mount(): void
     {
@@ -30,9 +34,9 @@ class Cashier extends Component implements HasForms
             $this->cartItems = Session::get('cartItems');
         }
 
-        $this->calculateTotalPriceInCart();
-
         $this->form->fill();
+
+        $this->calculateTotalPriceInCart();
     }
 
     public function render()
@@ -55,7 +59,7 @@ class Cashier extends Component implements HasForms
                     Forms\Components\TextInput::make('customer_name')
                         ->required()
                         ->maxLength(255)
-                        ->default(fn() => $this->customerName)
+                        ->default(fn() => $this->customer_name)
                         ->label('Customer Name'),
                     Forms\Components\Radio::make('customer_gender')
                         ->required()
@@ -180,5 +184,43 @@ class Cashier extends Component implements HasForms
         }
 
         $this->totalPrice = $initTotal;
+
+        return $initTotal;
+    }
+
+    public function rules()
+    {
+        return [
+            'customer_name' => ['required', 'string', 'max:255'],
+            'customer_gender' => ['required', Rule::in(['male', 'female'])],
+            'totalPrice' => ['required', 'integer'],
+            'payment_method_id' => ['required', Rule::exists('payment_methods')]
+        ];
+    }
+
+    public function checkout()
+    {
+        $this->validate();
+
+        $order = Order::query()->create([
+            'name' => $this->customer_name,
+            'gender' => $this->customer_gender,
+            'total_price' => $this->totalPrice,
+            'payment_method_id' => $this->payment_method_id,
+        ]);
+
+        foreach ($this->cartItems as $key => $value) {
+            $order->orderDetails()->create([
+                'product_id' => $value['product_id'],
+                'quantity' => $value['product_quantity'],
+                'price' => $value['product_price']
+            ]);
+        }
+
+        $this->cartItems = [];
+
+        Session::forget('cartItems');
+
+        return redirect()->to('cashier');
     }
 }

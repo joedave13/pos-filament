@@ -57,7 +57,7 @@
                 @endforeach
             </div>
 
-            <form>
+            <form wire:submit="checkout">
                 {{ $this->form }}
 
                 <x-filament::button type="submit" class="w-full" icon="heroicon-m-shopping-cart">
