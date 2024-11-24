@@ -29,10 +29,11 @@
         <div class="md:col-span-1 bg-white dark:bg-gray-800 shadow-md rounded-lg p-6">
 
             <div class="py-4">
-                <h3 class="text-lg font-semibold text-center">Total: Rp 25.0000</h3>
+                <h3 class="text-lg font-semibold text-center">Total: Rp. {{ number_format($totalPrice, 0, ',', '.') }}
+                </h3>
             </div>
             <div class="mb-4">
-                @foreach ($cartItems as $cartItem)
+                @foreach ($cartItems as $cartKey => $cartItem)
                     <div class="flex justify-between items-center bg-gray-100 dark:bg-gray-700 p-4 rounded-lg shadow">
                         <div class="flex items-center">
                             <img src="{{ $cartItem['product_image'] }}" alt="Product Image"
@@ -44,9 +45,13 @@
                             </div>
                         </div>
                         <div class="flex items-center">
-                            <x-filament::button color="warning">-</x-filament::button>
+                            <x-filament::button color="warning"
+                                wire:click="decreaseQuantity({{ $cartItem['product_id'] }})">-</x-filament::button>
                             <span class="px-4">{{ $cartItem['product_quantity'] }}</span>
-                            <x-filament::button color="success">+</x-filament::button>
+                            <x-filament::button color="success" style="margin-right: 0.25rem;"
+                                wire:click="increaseQuantity({{ $cartItem['product_id'] }})">+</x-filament::button>
+                            <x-filament::button color="danger"
+                                wire:click="deleteFromCart({{ $cartKey }})">x</x-filament::button>
                         </div>
                     </div>
                 @endforeach

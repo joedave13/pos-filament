@@ -26,6 +26,12 @@ class Cashier extends Component implements HasForms
 
     public function mount(): void
     {
+        if (Session::has('cartItems')) {
+            $this->cartItems = Session::get('cartItems');
+        }
+
+        $this->calculateTotalPriceInCart();
+
         $this->form->fill();
     }
 
@@ -58,7 +64,7 @@ class Cashier extends Component implements HasForms
                         ->inline()
                         ->inlineLabel(false)
                         ->label('Customer Gender'),
-                    Forms\Components\TextInput::make('total_price')
+                    Forms\Components\TextInput::make('totalPrice')
                         ->required()
                         ->numeric()
                         ->default(0)
@@ -110,10 +116,71 @@ class Cashier extends Component implements HasForms
 
         Session::put('cartItems', $this->cartItems);
 
+        $this->calculateTotalPriceInCart();
+
         Notification::make()
             ->title('Success')
             ->body("Product's added successfully.")
             ->success()
             ->send();
+    }
+
+    public function increaseQuantity(int $productId)
+    {
+        $product = Product::query()->findOrFail($productId);
+
+        foreach ($this->cartItems as $key => $value) {
+            if ($value['product_id'] == $productId) {
+                if ($value['product_quantity'] + 1 <= $product->stock) {
+                    $this->cartItems[$key]['product_quantity']++;
+                }
+            }
+        }
+
+        Session::put('cartItems', $this->cartItems);
+
+        $this->calculateTotalPriceInCart();
+    }
+
+    public function decreaseQuantity(int $productId)
+    {
+        $product = Product::query()->findOrFail($productId);
+
+        foreach ($this->cartItems as $key => $value) {
+            if ($value['product_id'] == $productId) {
+                if ($this->cartItems[$key]['product_quantity'] > 1) {
+                    $this->cartItems[$key]['product_quantity']--;
+                } else {
+                    unset($this->cartItems[$key]);
+                }
+            }
+        }
+
+        Session::put('cartItems', $this->cartItems);
+
+        $this->calculateTotalPriceInCart();
+    }
+
+    public function deleteFromCart($key)
+    {
+        unset($this->cartItems[$key]);
+
+        Session::forget('cartItems');
+        Session::put('cartItems', $this->cartItems);
+
+        $this->calculateTotalPriceInCart();
+    }
+
+    public function calculateTotalPriceInCart()
+    {
+        $initTotal = 0;
+
+        foreach ($this->cartItems as $key => $value) {
+            $initTotal += $value['product_quantity'] * $value['product_price'];
+        }
+
+        $this->totalPrice = $initTotal;
+
+        return $initTotal;
     }
 }
