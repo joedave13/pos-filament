@@ -56,7 +56,8 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->navigationGroups([
                 'Master Data',
-                'Transaction'
+                'Transaction',
+                'Setting'
             ]);
     }
 }
