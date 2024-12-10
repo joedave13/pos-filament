@@ -13,6 +13,11 @@ class ListCategories extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
+            Actions\Action::make('Export')
+                ->url(route('categories.export'))
+                ->color('info')
+                ->label('Export Category')
+                ->icon('heroicon-m-arrow-down-tray'),
             Actions\CreateAction::make()
                 ->label('New Category')
                 ->icon('heroicon-m-plus'),
