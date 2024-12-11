@@ -87,7 +87,8 @@ class ProductResource extends Resource
             ->defaultSort('name')
             ->columns([
                 Tables\Columns\ImageColumn::make('image')
-                    ->circular(),
+                    ->circular()
+                    ->defaultImageUrl('https://placehold.co/600?text=No+Image'),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable()
                     ->description(fn(Product $record) => $record->category->name),

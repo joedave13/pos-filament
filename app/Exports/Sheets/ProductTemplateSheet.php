@@ -17,11 +17,11 @@ class ProductTemplateSheet implements FromCollection, WithHeadings, WithTitle, W
     public function headings(): array
     {
         return [
-            'Product Name',
-            'Category ID',
-            'Stock',
-            'Price',
-            'Barcode'
+            'product_name',
+            'category_id',
+            'stock',
+            'price',
+            'barcode'
         ];
     }
 
