@@ -113,7 +113,7 @@ class Cashier extends Component implements HasForms
                 'product_id' => $product->id,
                 'product_name' => $product->name,
                 'product_price' => $product->price,
-                'product_image' => Storage::url($product->image),
+                'product_image' => $product->image ? Storage::url($product->image) : 'https://placehold.co/600?text=No+Image',
                 'product_quantity' => 1
             ];
         }

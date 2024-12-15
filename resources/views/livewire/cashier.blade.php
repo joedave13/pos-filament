@@ -10,8 +10,8 @@
                     @foreach ($products as $product)
                         <div wire:click="addToCart({{ $product->id }})"
                             class="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg shadow cursor-pointer">
-                            <img src="{{ Storage::url($product->image) }}" alt="Product Image"
-                                class="w-full h-32 object-cover rounded-lg mb-2">
+                            <img src="{{ $product->image ? Storage::url($product->image) : 'https://placehold.co/600?text=No+Image' }}"
+                                alt="Product Image" class="w-full h-32 object-cover rounded-lg mb-2">
                             <h3 class="font-semibold mb-2 truncate">{{ $product->name }}</h3>
                             <p class="text-gray-950 dark:text-gray-400 text-xs text-right">Rp.
                                 {{ number_format($product->price, 0, ',', '.') }}</p>
