@@ -12,14 +12,14 @@ class Expense extends Model
     protected $fillable = [
         'name',
         'note',
-        'date',
+        'expense_date',
         'amount'
     ];
 
     protected function casts(): array
     {
         return [
-            'date' => 'date',
+            'expense_date' => 'date',
             'amount' => 'integer',
         ];
     }

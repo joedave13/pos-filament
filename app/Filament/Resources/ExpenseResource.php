@@ -32,9 +32,10 @@ class ExpenseResource extends Resource
                     ->prefixIcon('heroicon-s-currency-dollar'),
                 Forms\Components\Textarea::make('note')
                     ->columnSpanFull(),
-                Forms\Components\DatePicker::make('date')
+                Forms\Components\DatePicker::make('expense_date')
                     ->required()
-                    ->prefixIcon('heroicon-s-calendar-days'),
+                    ->prefixIcon('heroicon-s-calendar-days')
+                    ->label('Date'),
                 Forms\Components\TextInput::make('amount')
                     ->required()
                     ->numeric()
@@ -48,9 +49,10 @@ class ExpenseResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('date')
+                Tables\Columns\TextColumn::make('expense_date')
                     ->date()
-                    ->sortable(),
+                    ->sortable()
+                    ->label('Date'),
                 Tables\Columns\TextColumn::make('amount')
                     ->numeric(thousandsSeparator: '.')
                     ->sortable()
