@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\PaymentMethodController;
 use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\Api\ShopSettingController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -16,6 +17,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::apiResource('payment-methods', PaymentMethodController::class)->only(['index']);
 
     Route::apiResource('orders', OrderController::class)->only(['index', 'store']);
+
+    Route::apiResource('shop-settings', ShopSettingController::class)->only(['index']);
 });
 
 Route::get('/user', function (Request $request) {
