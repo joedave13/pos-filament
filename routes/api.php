@@ -15,7 +15,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     Route::apiResource('payment-methods', PaymentMethodController::class)->only(['index']);
 
-    Route::apiResource('orders', OrderController::class)->only(['index']);
+    Route::apiResource('orders', OrderController::class)->only(['index', 'store']);
 });
 
 Route::get('/user', function (Request $request) {
