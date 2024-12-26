@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\PaymentMethodController;
 use App\Http\Controllers\Api\ProductController;
 use Illuminate\Http\Request;
@@ -13,6 +14,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('products/get-product-by-barcode', [ProductController::class, 'getProductByBarcode']);
 
     Route::apiResource('payment-methods', PaymentMethodController::class)->only(['index']);
+
+    Route::apiResource('orders', OrderController::class)->only(['index']);
 });
 
 Route::get('/user', function (Request $request) {
