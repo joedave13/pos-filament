@@ -28,6 +28,10 @@ class Cashier extends Component implements HasForms
     public $cartItems = [];
     public $totalPrice;
 
+    protected $listeners = [
+        'scanResult' => 'handleScanResult'
+    ];
+
     public function mount(): void
     {
         if (Session::has('cartItems')) {
@@ -222,5 +226,19 @@ class Cashier extends Component implements HasForms
         Session::forget('cartItems');
 
         return redirect()->to('cashier');
+    }
+
+    public function handleScanResult($decodedText)
+    {
+        $product = Product::where('barcode', $decodedText)->first();
+
+        if ($product) {
+            $this->addToCart($product->id);
+        } else {
+            Notification::make()
+                ->title('Product not found ' . $decodedText)
+                ->danger()
+                ->send();
+        }
     }
 }
